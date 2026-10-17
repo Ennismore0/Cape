@@ -3,8 +3,8 @@ plugins {
     id 'maven-publish'
 }
 
-version = project.mod_version
-group = project.maven_group
+version = 1.0-migrator
+group = com.ennismore.cape
 
 base {
     archivesName = project.archives_base_name
