@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
   "id": "cape",
-  "version": "1.2-aurora",
+  "version": "1.2.1-aurora",
   "name": "Cape",
   "description": "A cosmetic mod to apply any cape in the game.",
   "authors": [
