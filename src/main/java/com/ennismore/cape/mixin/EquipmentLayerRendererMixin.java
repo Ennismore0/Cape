@@ -1,8 +1,11 @@
 package com.ennismore.cape.mixin;
 
 import com.ennismore.cape.client.CapeSelection;
+
 import net.minecraft.client.renderer.entity.layers.EquipmentLayerRenderer;
+
 import net.minecraft.resources.Identifier;
+
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Redirect;
