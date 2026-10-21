@@ -1,1 +1,62 @@
-placeholder
+##         ___   _   ___ ___
+##        / __| /_\ | _ \ __|
+##       | (__ / _ \|  _/ _|
+##        \___/_/ \_\_| |___|
+======================================
+### Cape Source-Available License v1.0
+======================================
+
+Copyright (c) 2026 Ennismore0
+
+All rights reserved except as expressly permitted by this license.
+
+## 1. Permission to Use
+
+Permission is granted to any person obtaining a copy of the source code of the Cape project (the "Software") to use, study, and modify the Software for personal, non-commercial purposes, subject to the conditions below.
+
+## 2. Redistribution
+
+You may redistribute original or modified copies of the Software provided that:
+
+- You include a complete copy of this license.
+- You retain all applicable copyright and license notices.
+- You make the complete corresponding source code of any distributed modified version available to its recipients.
+- Any redistributed version of the Software or derivative work incorporating the Software is distributed under this license, subject to applicable third-party license requirements.
+
+## 3. Commercial Use
+
+Commercial use of the Software is prohibited without prior written permission from the copyright holder.
+
+Commercial use includes selling the Software or modified versions, distributing it as part of a paid product or service, or otherwise using it primarily for commercial gain.
+
+The copyright holder may grant individual exceptions in writing.
+
+## 4. Cape Name and Branding
+
+This license does not grant permission to use the Cape name, logo, icons, or other project branding to imply that a product or modified version is official, endorsed, or maintained by the original project.
+
+Permission from the copyright holder is required to use Cape's project branding beyond ordinary factual references to the project.
+
+## 5. Third-Party Materials
+
+This license applies only to material for which the copyright holder has the right to grant these permissions. Third-party code, libraries, assets, trademarks, and other materials remain subject to their respective licenses and rights.
+
+Nothing in this license overrides the terms of applicable third-party licenses.
+
+## 6. No Warranty
+
+The Software is provided "as is", without warranty of any kind, express or implied, including but not limited to warranties of merchantability, fitness for a particular purpose, and non-infringement, to the extent permitted by applicable law.
+
+## 7. Limitation of Liability
+
+To the extent permitted by applicable law, the copyright holder shall not be liable for claims, damages, or other liability arising from the Software or its use, including direct, indirect, incidental, or consequential damages.
+
+## 8. Termination
+
+Permissions granted under this license terminate if you fail to comply with its terms. Your permissions may be reinstated if the violation is corrected, to the extent permitted by applicable law.
+
+## 9. Reservation of Rights
+
+All rights not expressly granted by this license are reserved by the copyright holder.
+
+For permissions beyond this license, contact the copyright holder through the official Cape project channels.
