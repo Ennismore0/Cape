@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
   "id": "cape",
-  "version": "1.0-migrator",
+  "version": "1.2-aurora",
   "name": "Cape",
   "description": "A cosmetic mod to apply any cape in the game.",
   "authors": [
@@ -11,7 +11,14 @@
     "DashLev",
     "FluMc",
     "Zzz734",
-    "xX_zytherx_Xx"
+    "xX_zytherx_Xx",
+    "Wh1teou1",
+    "obsi_cpvp",
+    "kingriley045_540",
+    "StrikeOThunder"
+  ],
+  "testers": [
+    "obsi_cpvp"
   ],
   "contact": {
     "sources": "https://github.com/Ennismore0/Cape",
@@ -22,7 +29,7 @@
   "icon": "assets/cape/icon.png",
   "environment": "client",
   "entrypoints": {
-    "client": [
+    "client": [,
       "com.ennismore.cape.client.CapeClient"
     ],
     "main": [
