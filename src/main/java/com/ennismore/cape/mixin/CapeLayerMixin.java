@@ -1,7 +1,7 @@
-
 package com.ennismore.cape.mixin;
 
 import com.ennismore.cape.client.CapeSelection;
+import com.ennismore.cape.client.CustomCapeManager;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 
@@ -13,7 +13,9 @@ import net.minecraft.client.renderer.entity.state.AvatarRenderState;
 import net.minecraft.client.renderer.rendertype.RenderTypes;
 import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.client.resources.model.EquipmentClientInfo;
+
 import net.minecraft.resources.Identifier;
+
 import net.minecraft.world.item.ItemStack;
 
 import org.spongepowered.asm.mixin.Final;
@@ -74,13 +76,23 @@ public abstract class CapeLayerMixin {
             return;
         }
 
-        Identifier texture = Identifier.fromNamespaceAndPath(
-                "cape",
-                "textures/capes/" + selected + ".png"
-        );
+        Identifier texture;
 
-        if (minecraft.getResourceManager().getResource(texture).isEmpty()) {
-            return;
+        if (CustomCapeManager.isCustomCape(selected)) {
+            texture = CustomCapeManager.getTexture(selected);
+
+            if (texture == null) {
+                return;
+            }
+        } else {
+            texture = Identifier.fromNamespaceAndPath(
+                    "cape",
+                    "textures/capes/" + selected + ".png"
+            );
+
+            if (minecraft.getResourceManager().getResource(texture).isEmpty()) {
+                return;
+            }
         }
 
         poseStack.pushPose();
