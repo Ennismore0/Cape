@@ -2,18 +2,24 @@ package com.ennismore.cape.client.gui;
 
 import com.ennismore.cape.client.CapeSelection;
 import com.ennismore.cape.client.CustomCapeManager;
+
 import com.mojang.blaze3d.platform.InputConstants;
+
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.EditBox;
 import net.minecraft.client.gui.screens.Screen;
+
 import net.minecraft.client.renderer.RenderPipelines;
+
 import net.minecraft.network.chat.Component;
+
 import net.minecraft.resources.Identifier;
 
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
@@ -53,6 +59,8 @@ public class CapeScreen extends Screen {
     );
 
     private String selectedCape = "default";
+    private String deleteCapeId;
+    private boolean deleteMode;
     private EditBox searchBox;
     private int gridLeft;
     private int gridTop;
@@ -191,7 +199,8 @@ public class CapeScreen extends Screen {
             int previewY = y + (TILE_SIZE - previewHeight) / 2;
 
             boolean previewExists = preview != null
-                    && (custom || this.minecraft.getResourceManager().getResource(preview).isPresent());
+                    && (custom || this.minecraft.getResourceManager()
+                    .getResource(preview).isPresent());
 
             if (previewExists) {
                 graphics.blit(
@@ -274,19 +283,25 @@ public class CapeScreen extends Screen {
                 mouseX, mouseY, uploadX, uploadY, UPLOAD_SIZE, UPLOAD_SIZE
         );
 
+        String buttonTexture = deleteMode
+                ? "textures/gui/cape_delete_custom_"
+                : "textures/gui/cape_upload_button_";
+
         drawCustomButton(
                 graphics,
                 uploadX, uploadY, UPLOAD_SIZE, UPLOAD_SIZE,
-                "textures/gui/cape_upload_button_"
+                buttonTexture
                         + (uploadHovered ? "highlighted" : "unhighlighted")
                         + ".png",
                 UPLOAD_SIZE
         );
 
         if (uploadHovered) {
+            String tooltip = deleteMode ? "Delete Custom Cape" : "Upload Custom Cape";
+
             graphics.text(
                     this.font,
-                    "Upload Custom Cape",
+                    tooltip,
                     mouseX + 8,
                     mouseY - 12,
                     0xFFFFFFFF,
@@ -398,6 +413,45 @@ public class CapeScreen extends Screen {
         double mouseY = event.y();
         int button = event.button();
 
+        boolean insideGrid = isInside(
+                mouseX, mouseY,
+                gridLeft, gridTop,
+                TILE_COLUMNS * TILE_STEP - TILE_GAP,
+                gridBottom - gridTop
+        );
+
+        if (button == InputConstants.MOUSE_BUTTON_RIGHT && insideGrid) {
+            List<CapeEntry> visibleCapes = getVisibleCapes();
+
+            for (int i = 0; i < visibleCapes.size(); i++) {
+                int column = i % TILE_COLUMNS;
+                int row = i / TILE_COLUMNS;
+                int x = gridLeft + column * TILE_STEP;
+                int y = gridTop + row * TILE_ROW_HEIGHT - scrollOffset;
+
+                if (y + TILE_SIZE + 18 <= gridTop || y >= gridBottom) {
+                    continue;
+                }
+
+                if (!isInside(mouseX, mouseY, x, y, TILE_SIZE, TILE_SIZE + 18)) {
+                    continue;
+                }
+
+                CapeEntry cape = visibleCapes.get(i);
+
+                if (CustomCapeManager.isCustomCape(cape.id())) {
+                    deleteMode = true;
+                    deleteCapeId = cape.id();
+                    selectedCape = cape.id();
+                    CapeSelection.setSelectedCape(selectedCape);
+                }
+
+                return true;
+            }
+
+            return true;
+        }
+
         if (button == InputConstants.MOUSE_BUTTON_LEFT) {
             int doneWidth = 100;
             int doneHeight = 24;
@@ -413,7 +467,12 @@ public class CapeScreen extends Screen {
             int uploadY = doneY + (doneHeight - UPLOAD_SIZE) / 2;
 
             if (isInside(mouseX, mouseY, uploadX, uploadY, UPLOAD_SIZE, UPLOAD_SIZE)) {
-                openUploadPicker();
+                if (deleteMode) {
+                    deleteSelectedCustomCape();
+                } else {
+                    openUploadPicker();
+                }
+
                 return true;
             }
 
@@ -422,12 +481,7 @@ public class CapeScreen extends Screen {
                 return true;
             }
 
-            if (isInside(
-                    mouseX, mouseY,
-                    gridLeft, gridTop,
-                    TILE_COLUMNS * TILE_STEP - TILE_GAP,
-                    gridBottom - gridTop
-            )) {
+            if (insideGrid) {
                 List<CapeEntry> visibleCapes = getVisibleCapes();
 
                 for (int i = 0; i < visibleCapes.size(); i++) {
@@ -442,17 +496,64 @@ public class CapeScreen extends Screen {
 
                     if (isInside(mouseX, mouseY, x, y, TILE_SIZE, TILE_SIZE + 18)) {
                         CapeEntry cape = visibleCapes.get(i);
+
+                        deleteMode = false;
+                        deleteCapeId = null;
                         selectedCape = cape.id();
                         CapeSelection.setSelectedCape(selectedCape);
+
                         return true;
                     }
                 }
 
                 return true;
             }
+
+            if (deleteMode && !isInside(
+                    mouseX, mouseY, uploadX, uploadY, UPLOAD_SIZE, UPLOAD_SIZE
+            )) {
+                deleteMode = false;
+                deleteCapeId = null;
+            }
         }
 
         return super.mouseClicked(event, doubleClick);
+    }
+
+    private void deleteSelectedCustomCape() {
+        if (!deleteMode || deleteCapeId == null
+                || !CustomCapeManager.isCustomCape(deleteCapeId)) {
+            deleteMode = false;
+            deleteCapeId = null;
+            return;
+        }
+
+        try {
+            boolean deleted = CustomCapeManager.deleteCape(deleteCapeId);
+
+            if (deleted) {
+                if (selectedCape.equals(deleteCapeId)) {
+                    selectedCape = "default";
+                    CapeSelection.setSelectedCape("default");
+                }
+            } else if (this.minecraft.player != null) {
+                this.minecraft.player.connection.sendChat(
+                        "Could not delete that custom cape."
+                );
+            }
+        } catch (IOException | RuntimeException exception) {
+            exception.printStackTrace();
+
+            if (this.minecraft.player != null) {
+                this.minecraft.player.connection.sendChat(
+                        "Could not delete that custom cape. Check the game log."
+                );
+            }
+        }
+
+        deleteMode = false;
+        deleteCapeId = null;
+        scrollOffset = clampScrollOffset(scrollOffset);
     }
 
     private void openUploadPicker() {
