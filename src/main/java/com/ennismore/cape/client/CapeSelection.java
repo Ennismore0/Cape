@@ -1,10 +1,12 @@
 package com.ennismore.cape.client;
 
 import net.fabricmc.loader.api.FabricLoader;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
+
 import java.nio.file.Files;
 import java.nio.file.Path;
 
@@ -16,10 +18,6 @@ public final class CapeSelection {
             FabricLoader.getInstance().getConfigDir().resolve("cape-cape-selection.json");
 
     private static String selectedCape = load();
-
-    static {
-        logSelectedCape();
-    }
 
     private CapeSelection() {
     }
@@ -35,23 +33,7 @@ public final class CapeSelection {
 
         selectedCape = cape;
         save();
-        logSelectedCape();
-    }
-
-    private static void logSelectedCape() {
-        String name = switch (selectedCape) {
-            case "default" -> "Default";
-            case "none" -> "No";
-            case "cape" -> "Cape";
-            case "migrator" -> "Migrator";
-            case "cherry_blossom" -> "Cherry Blossom";
-            case "mojang_studios" -> "Mojang Studios";
-            case "purple_heart" -> "Purple Heart";
-            case "15th_anniversary" -> "15th Anniversary";
-            default -> selectedCape;
-        };
-
-        LOGGER.info("{} cape selected!", name);
+        LOGGER.info("{} cape selected!", cape);
     }
 
     private static String load() {
@@ -59,7 +41,9 @@ public final class CapeSelection {
             if (Files.exists(CONFIG_FILE)) {
                 String value = Files.readString(CONFIG_FILE).trim();
 
-                if (value.matches("default|none|cape|migrator|cherry_blossom|mojang_studios|purple_heart|15th_anniversary")) {
+                if (value.matches(
+                        "default|none|cape|migrator|cherry_blossom|mojang_studios|purple_heart|15th_anniversary|vanilla|minecon_2012|twisted|hero|copper|aurora|custom_[1-9][0-9]*"
+                )) {
                     return value;
                 }
             }
