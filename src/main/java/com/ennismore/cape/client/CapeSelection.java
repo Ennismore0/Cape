@@ -42,7 +42,7 @@ public final class CapeSelection {
                 String value = Files.readString(CONFIG_FILE).trim();
 
                 if (value.matches(
-                        "default|none|cape|migrator|cherry_blossom|mojang_studios|purple_heart|15th_anniversary|vanilla|minecon_2012|twisted|hero|copper|aurora|custom_[1-9][0-9]*"
+                        "default|none|cape|migrator|cherry_blossom|mojang_studios|purple_heart|15th_anniversary|vanilla|minecon_2012|twisted|hero|copper|aurora|pan|common|followers|menace|home|mojang_office|yearn|founders|builder|zombie_horse|15th_year|minecraft_experience|moonlight_trail|minecon_2016|minecon_2015|minecon_2013|minecon_2011|realms_mapmaker|mojang|translator|mojira_moderator|mojang_classic|cobalt|scrolls|turtle|translator_chinese|custom_[1-9][0-9]*"
                 )) {
                     return value;
                 }
@@ -60,4 +60,4 @@ public final class CapeSelection {
         } catch (IOException ignored) {
         }
     }
-}
+    }
