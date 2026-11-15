@@ -1,5 +1,5 @@
 ### [Cape](https://github.com/Ennismore0/Cape/tree/src)
-Cape is a cosmetic Minecraft mod that allows you to change your in-game cape to any of the 50+ options, offered by vanilla!
+Cape is a cosmetic Minecraft mod that allows you to change your in-game cape to any of the 50+ options offered by vanilla!
 
 ### Features
 * 50+ Cape Designs: Choose from a wide selection of cape designs found in vanilla Minecraft.
