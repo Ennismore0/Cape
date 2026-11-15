@@ -29,7 +29,7 @@ public class CapeClient implements ClientModInitializer {
                     Identifier.fromNamespaceAndPath("cape", "main")
             );
 
-    private static final KeyMapping OPEN_CAPE_MENU =
+    public static final KeyMapping OPEN_CAPE_MENU =
             KeyMappingHelper.registerKeyMapping(
                     new KeyMapping(
                             "key.cape.open_menu",
@@ -40,24 +40,19 @@ public class CapeClient implements ClientModInitializer {
             );
 
     private static final List<String> BUILT_IN_CAPES = List.of(
-            "default",
-            "none",
-            "cape",
-            "migrator",
-            "cherry_blossom",
-            "mojang_studios",
-            "purple_heart",
-            "15th_anniversary",
-            "vanilla",
-            "minecon_2012",
-            "twisted",
-            "hero",
-            "copper",
-            "aurora"
+            "default", "none", "cape", "migrator", "cherry_blossom",
+            "mojang_studios", "purple_heart", "15th_anniversary", "vanilla",
+            "twisted", "hero", "copper", "aurora", "pan",
+            "common", "followers", "menace", "home", "mojang_office", "yearn",
+            "founders", "builder", "zombie_horse", "15th_year", "minecraft_experience",
+            "moonlight_trail", "minecon_2016", "minecon_2015", "minecon_2013", "minecon_2012",
+            "minecon_2011", "realms_mapmaker", "mojang", "translator", "mojira_moderator",
+            "mojang_classic", "cobalt", "scrolls", "turtle", "translator_chinese"
     );
 
     @Override
     public void onInitializeClient() {
+        CapeSettings.load();
         CustomCapeManager.load();
 
         ClientTickEvents.END_CLIENT_TICK.register(client -> {
