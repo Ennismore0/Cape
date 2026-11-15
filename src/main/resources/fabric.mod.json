@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
   "id": "cape",
-  "version": "1.2.1-aurora",
+  "version": "1.4-menace",
   "name": "Cape",
   "description": "A cosmetic mod to apply any cape in the game.",
   "authors": [
@@ -15,7 +15,8 @@
     "Wh1teou1",
     "obsi_cpvp",
     "kingriley045_540",
-    "StrikeOThunder"
+    "StrikeOThunder",
+    "Vynox13"
   ],
   "testers": [
     "obsi_cpvp"
@@ -25,11 +26,11 @@
     "issues": "https://github.com/Ennismore0/Cape/issues",
     "homepage": "https://modrinth.com/mod/cape."
   },
-  "license": "All-Rights-Reserved",
+  "license": "Cape Source-Available License v1.0",
   "icon": "assets/cape/icon.png",
   "environment": "client",
   "entrypoints": {
-    "client": [,
+    "client": [
       "com.ennismore.cape.client.CapeClient"
     ],
     "main": [
