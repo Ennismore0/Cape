@@ -1,6 +1,7 @@
 package com.ennismore.cape.client.gui;
 
 import com.ennismore.cape.client.CapeSelection;
+import com.ennismore.cape.client.CapeSettings;
 import com.ennismore.cape.client.CustomCapeManager;
 
 import com.mojang.blaze3d.platform.InputConstants;
@@ -8,7 +9,6 @@ import com.mojang.blaze3d.platform.InputConstants;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.EditBox;
 import net.minecraft.client.gui.screens.Screen;
-
 import net.minecraft.client.renderer.RenderPipelines;
 
 import net.minecraft.network.chat.Component;
@@ -29,7 +29,7 @@ public class CapeScreen extends Screen {
     private static final int CAPE_BLUE = 0xFF4B8DFE;
     private static final int FRAME_TEXTURE_SIZE = 88;
     private static final int BUTTON_TEXTURE_SIZE = 64;
-    private static final int SETTINGS_TEXTURE_SIZE = 128;
+    private static final int SETTINGS_TEXTURE_SIZE = 28;
     private static final int PREVIEW_TEXTURE_SIZE = 350;
     private static final int TILE_SIZE = 88;
     private static final int TILE_GAP = 12;
@@ -51,12 +51,41 @@ public class CapeScreen extends Screen {
             new CapeEntry("Purple Heart", "purple_heart", "purple_heart", false),
             new CapeEntry("15th Anniversary", "15th_anniversary", "15th_anniversary", false),
             new CapeEntry("Vanilla", "vanilla", "vanilla", false),
-            new CapeEntry("MineCon 2012", "minecon_2012", "minecon_2012", false),
             new CapeEntry("Twisted", "twisted", "twisted", false),
             new CapeEntry("Hero", "hero", "hero", false),
             new CapeEntry("Copper", "copper", "copper", false),
-            new CapeEntry("Aurora", "aurora", "aurora", false)
+            new CapeEntry("Aurora", "aurora", "aurora", false),
+            new CapeEntry("Pan", "pan", "pan", false),
+            new CapeEntry("Common", "common", "common", false),
+            new CapeEntry("Follower's", "followers", "followers", false),
+            new CapeEntry("Menace", "menace", "menace", false),
+            new CapeEntry("Home", "home", "home", false),
+            new CapeEntry("Mojang Office", "mojang_office", "mojang_office", false),
+            new CapeEntry("Yearn", "yearn", "yearn", false),
+            new CapeEntry("Founder's", "founders", "founders", false),
+            new CapeEntry("Builder", "builder", "builder", false),
+            new CapeEntry("Zombie Horse", "zombie_horse", "zombie_horse", false),
+            new CapeEntry("15th Year", "15th_year", "15th_year", false),
+            new CapeEntry("Minecraft Experience", "minecraft_experience", "minecraft_experience", false),
+            new CapeEntry("Moonlight Trail", "moonlight_trail", "moonlight_trail", false),
+            new CapeEntry("MineCon 2016", "minecon_2016", "minecon_2016", false),
+            new CapeEntry("MineCon 2015", "minecon_2015", "minecon_2015", false),
+            new CapeEntry("MineCon 2013", "minecon_2013", "minecon_2013", false),
+            new CapeEntry("MineCon 2012", "minecon_2012", "minecon_2012", false),
+            new CapeEntry("MineCon 2011", "minecon_2011", "minecon_2011", false),
+            new CapeEntry("Realms Mapmaker", "realms_mapmaker", "realms_mapmaker", false),
+            new CapeEntry("Mojang", "mojang", "mojang", false),
+            new CapeEntry("Translator", "translator", "translator", false),
+            new CapeEntry("Mojira Moderator", "mojira_moderator", "mojira_moderator", false),
+            new CapeEntry("Mojang Classic", "mojang_classic", "mojang_classic", false),
+            new CapeEntry("Cobalt", "cobalt", "cobalt", false),
+            new CapeEntry("Scrolls", "scrolls", "scrolls", false),
+            new CapeEntry("Turtle", "turtle", "turtle", false),
+            new CapeEntry("Translator (Chinese)", "translator_chinese", "translator_chinese", false)
     );
+
+    private final Screen parent;
+    private final boolean defaultCapeSelectionMode;
 
     private String selectedCape = "default";
     private String deleteCapeId;
@@ -68,12 +97,23 @@ public class CapeScreen extends Screen {
     private int scrollOffset;
 
     public CapeScreen() {
-        super(Component.literal("Cape"));
+        this(null, false);
+    }
+
+    public CapeScreen(Screen parent, boolean defaultCapeSelectionMode) {
+        super(Component.literal(
+                defaultCapeSelectionMode ? "Select Default Cape" : "Cape"
+        ));
+
+        this.parent = parent;
+        this.defaultCapeSelectionMode = defaultCapeSelectionMode;
     }
 
     @Override
     protected void init() {
-        selectedCape = CapeSelection.getSelectedCape();
+        selectedCape = defaultCapeSelectionMode
+                ? CapeSettings.getDefaultCape()
+                : CapeSelection.getSelectedCape();
 
         int searchWidth = Math.min(260, this.width - 100);
 
@@ -106,17 +146,25 @@ public class CapeScreen extends Screen {
         List<CapeEntry> entries = new ArrayList<>(CAPES);
 
         for (CustomCapeManager.CustomCape cape : CustomCapeManager.getCapes()) {
-            entries.add(new CapeEntry(cape.name(), cape.id(), cape.id(), false));
+            entries.add(new CapeEntry(
+                    cape.name(),
+                    cape.id(),
+                    cape.id(),
+                    false
+            ));
         }
 
         return entries.stream()
-                .filter(cape -> cape.name().toLowerCase(Locale.ROOT).contains(query))
+                .filter(cape -> cape.name()
+                        .toLowerCase(Locale.ROOT)
+                        .contains(query))
                 .toList();
     }
 
     private int getContentHeight() {
         int count = getVisibleCapes().size();
         int rows = (count + TILE_COLUMNS - 1) / TILE_COLUMNS;
+
         return rows == 0 ? 0 : rows * TILE_ROW_HEIGHT - TILE_GAP;
     }
 
@@ -137,7 +185,9 @@ public class CapeScreen extends Screen {
     ) {
         super.extractRenderState(graphics, mouseX, mouseY, delta);
 
-        String title = "Cape";
+        String title = defaultCapeSelectionMode
+                ? "Select Default Cape"
+                : "Cape";
 
         graphics.text(
                 this.font,
@@ -154,7 +204,10 @@ public class CapeScreen extends Screen {
         graphics.enableScissor(
                 gridLeft,
                 gridTop,
-                Math.min(this.width, gridLeft + TILE_COLUMNS * TILE_STEP - TILE_GAP),
+                Math.min(
+                        this.width,
+                        gridLeft + TILE_COLUMNS * TILE_STEP - TILE_GAP
+                ),
                 gridBottom
         );
 
@@ -191,7 +244,11 @@ public class CapeScreen extends Screen {
 
             Identifier preview = custom
                     ? CustomCapeManager.getTexture(cape.id())
-                    : texture("textures/capes/previews/" + cape.previewId() + ".png");
+                    : texture(
+                    "textures/capes/previews/"
+                            + cape.previewId()
+                            + ".png"
+            );
 
             int previewWidth = custom ? 64 : PREVIEW_DISPLAY_SIZE;
             int previewHeight = custom ? 32 : PREVIEW_DISPLAY_SIZE;
@@ -240,12 +297,29 @@ public class CapeScreen extends Screen {
         }
 
         graphics.disableScissor();
+
         drawScrollbar(graphics, mouseX, mouseY);
+
+        int settingsX = this.width - 38;
+        int settingsY = 10;
+        int settingsWidth = 28;
+        int settingsHeight = 28;
+
+        boolean settingsHovered = isInside(
+                mouseX, mouseY,
+                settingsX, settingsY,
+                settingsWidth, settingsHeight
+        );
+
+        String settingsTexture = "textures/gui/settings/cape_settings_button"
+                + (settingsHovered ? "_hovered" : "")
+                + ".png";
 
         drawCustomButton(
                 graphics,
-                this.width - 38, 10, 28, 28,
-                "textures/gui/cape_settings_button.png",
+                settingsX, settingsY,
+                settingsWidth, settingsHeight,
+                settingsTexture,
                 SETTINGS_TEXTURE_SIZE
         );
 
@@ -254,11 +328,16 @@ public class CapeScreen extends Screen {
         int doneX = this.width / 2 - doneWidth / 2;
         int doneY = this.height - 38;
 
-        boolean doneHovered = isInside(mouseX, mouseY, doneX, doneY, doneWidth, doneHeight);
+        boolean doneHovered = isInside(
+                mouseX, mouseY,
+                doneX, doneY,
+                doneWidth, doneHeight
+        );
 
         drawCustomButton(
                 graphics,
-                doneX, doneY, doneWidth, doneHeight,
+                doneX, doneY,
+                doneWidth, doneHeight,
                 "textures/gui/cape_button_"
                         + (doneHovered ? "highlighted" : "unhighlighted")
                         + ".png",
@@ -280,7 +359,9 @@ public class CapeScreen extends Screen {
         int uploadY = doneY + (doneHeight - UPLOAD_SIZE) / 2;
 
         boolean uploadHovered = isInside(
-                mouseX, mouseY, uploadX, uploadY, UPLOAD_SIZE, UPLOAD_SIZE
+                mouseX, mouseY,
+                uploadX, uploadY,
+                UPLOAD_SIZE, UPLOAD_SIZE
         );
 
         String buttonTexture = deleteMode
@@ -289,7 +370,8 @@ public class CapeScreen extends Screen {
 
         drawCustomButton(
                 graphics,
-                uploadX, uploadY, UPLOAD_SIZE, UPLOAD_SIZE,
+                uploadX, uploadY,
+                UPLOAD_SIZE, UPLOAD_SIZE,
                 buttonTexture
                         + (uploadHovered ? "highlighted" : "unhighlighted")
                         + ".png",
@@ -297,7 +379,9 @@ public class CapeScreen extends Screen {
         );
 
         if (uploadHovered) {
-            String tooltip = deleteMode ? "Delete Custom Cape" : "Upload Custom Cape";
+            String tooltip = deleteMode
+                    ? "Delete Custom Cape"
+                    : "Upload Custom Cape";
 
             graphics.text(
                     this.font,
@@ -327,18 +411,30 @@ public class CapeScreen extends Screen {
                 gridLeft + TILE_COLUMNS * TILE_STEP - TILE_GAP + 6
         );
 
-        graphics.fill(barX, gridTop, barX + SCROLLBAR_WIDTH, gridBottom, 0x66333333);
+        graphics.fill(
+                barX, gridTop,
+                barX + SCROLLBAR_WIDTH, gridBottom,
+                0x66333333
+        );
 
-        int thumbHeight = Math.max(18, viewportHeight * viewportHeight / contentHeight);
+        int thumbHeight = Math.max(
+                18,
+                viewportHeight * viewportHeight / contentHeight
+        );
+
         int thumbTravel = viewportHeight - thumbHeight;
-        int thumbY = gridTop + thumbTravel * scrollOffset / Math.max(1, getMaxScroll());
+        int thumbY = gridTop
+                + thumbTravel * scrollOffset / Math.max(1, getMaxScroll());
 
         boolean hovered = isInside(
-                mouseX, mouseY, barX, thumbY, SCROLLBAR_WIDTH, thumbHeight
+                mouseX, mouseY,
+                barX, thumbY,
+                SCROLLBAR_WIDTH, thumbHeight
         );
 
         graphics.fill(
-                barX, thumbY, barX + SCROLLBAR_WIDTH, thumbY + thumbHeight,
+                barX, thumbY,
+                barX + SCROLLBAR_WIDTH, thumbY + thumbHeight,
                 hovered ? CAPE_BLUE : 0xFFCCCCCC
         );
     }
@@ -354,7 +450,9 @@ public class CapeScreen extends Screen {
     ) {
         Identifier id = texture(path);
 
-        if (this.minecraft.getResourceManager().getResource(id).isPresent()) {
+        if (this.minecraft.getResourceManager()
+                .getResource(id)
+                .isPresent()) {
             graphics.blit(
                     RenderPipelines.GUI_TEXTURED,
                     id,
@@ -396,8 +494,10 @@ public class CapeScreen extends Screen {
                 gridBottom - gridTop
         )) {
             scrollOffset = clampScrollOffset(
-                    scrollOffset - (int) Math.signum(scrollY) * TILE_ROW_HEIGHT
+                    scrollOffset
+                            - (int) Math.signum(scrollY) * TILE_ROW_HEIGHT
             );
+
             return true;
         }
 
@@ -421,6 +521,10 @@ public class CapeScreen extends Screen {
         );
 
         if (button == InputConstants.MOUSE_BUTTON_RIGHT && insideGrid) {
+            if (defaultCapeSelectionMode) {
+                return true;
+            }
+
             List<CapeEntry> visibleCapes = getVisibleCapes();
 
             for (int i = 0; i < visibleCapes.size(); i++) {
@@ -433,7 +537,10 @@ public class CapeScreen extends Screen {
                     continue;
                 }
 
-                if (!isInside(mouseX, mouseY, x, y, TILE_SIZE, TILE_SIZE + 18)) {
+                if (!isInside(
+                        mouseX, mouseY,
+                        x, y, TILE_SIZE, TILE_SIZE + 18
+                )) {
                     continue;
                 }
 
@@ -442,8 +549,6 @@ public class CapeScreen extends Screen {
                 if (CustomCapeManager.isCustomCape(cape.id())) {
                     deleteMode = true;
                     deleteCapeId = cape.id();
-                    selectedCape = cape.id();
-                    CapeSelection.setSelectedCape(selectedCape);
                 }
 
                 return true;
@@ -458,7 +563,11 @@ public class CapeScreen extends Screen {
             int doneX = this.width / 2 - doneWidth / 2;
             int doneY = this.height - 38;
 
-            if (isInside(mouseX, mouseY, doneX, doneY, doneWidth, doneHeight)) {
+            if (isInside(
+                    mouseX, mouseY,
+                    doneX, doneY,
+                    doneWidth, doneHeight
+            )) {
                 this.onClose();
                 return true;
             }
@@ -466,7 +575,11 @@ public class CapeScreen extends Screen {
             int uploadX = doneX + doneWidth + 8;
             int uploadY = doneY + (doneHeight - UPLOAD_SIZE) / 2;
 
-            if (isInside(mouseX, mouseY, uploadX, uploadY, UPLOAD_SIZE, UPLOAD_SIZE)) {
+            if (isInside(
+                    mouseX, mouseY,
+                    uploadX, uploadY,
+                    UPLOAD_SIZE, UPLOAD_SIZE
+            )) {
                 if (deleteMode) {
                     deleteSelectedCustomCape();
                 } else {
@@ -476,7 +589,10 @@ public class CapeScreen extends Screen {
                 return true;
             }
 
-            if (isInside(mouseX, mouseY, this.width - 38, 10, 28, 28)) {
+            if (isInside(
+                    mouseX, mouseY,
+                    this.width - 38, 10, 28, 28
+            )) {
                 this.minecraft.setScreen(new CapeSettingsScreen(this));
                 return true;
             }
@@ -494,23 +610,36 @@ public class CapeScreen extends Screen {
                         continue;
                     }
 
-                    if (isInside(mouseX, mouseY, x, y, TILE_SIZE, TILE_SIZE + 18)) {
-                        CapeEntry cape = visibleCapes.get(i);
+                    if (!isInside(
+                            mouseX, mouseY,
+                            x, y, TILE_SIZE, TILE_SIZE + 18
+                    )) {
+                        continue;
+                    }
 
-                        deleteMode = false;
-                        deleteCapeId = null;
+                    CapeEntry cape = visibleCapes.get(i);
+
+                    deleteMode = false;
+                    deleteCapeId = null;
+
+                    if (defaultCapeSelectionMode) {
+                        CapeSettings.setDefaultCape(cape.id());
+                        this.minecraft.setScreen(parent);
+                    } else {
                         selectedCape = cape.id();
                         CapeSelection.setSelectedCape(selectedCape);
-
-                        return true;
                     }
+
+                    return true;
                 }
 
                 return true;
             }
 
             if (deleteMode && !isInside(
-                    mouseX, mouseY, uploadX, uploadY, UPLOAD_SIZE, UPLOAD_SIZE
+                    mouseX, mouseY,
+                    uploadX, uploadY,
+                    UPLOAD_SIZE, UPLOAD_SIZE
             )) {
                 deleteMode = false;
                 deleteCapeId = null;
@@ -521,8 +650,21 @@ public class CapeScreen extends Screen {
     }
 
     private void deleteSelectedCustomCape() {
-        if (!deleteMode || deleteCapeId == null
+        if (!deleteMode
+                || deleteCapeId == null
                 || !CustomCapeManager.isCustomCape(deleteCapeId)) {
+            deleteMode = false;
+            deleteCapeId = null;
+            return;
+        }
+
+        if (deleteCapeId.equals(CapeSettings.getDefaultCape())) {
+            if (this.minecraft.player != null) {
+                this.minecraft.player.connection.sendChat(
+                        "You cannot delete this cape because it is selected as the default!"
+                );
+            }
+
             deleteMode = false;
             deleteCapeId = null;
             return;
@@ -533,8 +675,8 @@ public class CapeScreen extends Screen {
 
             if (deleted) {
                 if (selectedCape.equals(deleteCapeId)) {
-                    selectedCape = "default";
-                    CapeSelection.setSelectedCape("default");
+                    selectedCape = CapeSettings.getDefaultCape();
+                    CapeSelection.setSelectedCape(selectedCape);
                 }
             } else if (this.minecraft.player != null) {
                 this.minecraft.player.connection.sendChat(
@@ -565,6 +707,7 @@ public class CapeScreen extends Screen {
                                 + " custom capes."
                 );
             }
+
             return;
         }
 
@@ -572,7 +715,7 @@ public class CapeScreen extends Screen {
             String script = "Add-Type -AssemblyName System.Windows.Forms; "
                     + "$dialog = New-Object System.Windows.Forms.OpenFileDialog; "
                     + "$dialog.Title = 'Upload Custom Cape'; "
-                    + "$dialog.Filter = 'PNG Images (*.png)|*.png'; "
+                    + "$dialog.Filter = 'Custom Capes (*.png)|*.png'; "
                     + "$dialog.Multiselect = $false; "
                     + "if ($dialog.ShowDialog() -eq 'OK') { "
                     + "[Console]::WriteLine($dialog.FileName) "
@@ -597,14 +740,18 @@ public class CapeScreen extends Screen {
 
                 int exitCode = process.waitFor();
 
-                if (exitCode != 0 || selectedPath == null || selectedPath.isBlank()) {
+                if (exitCode != 0
+                        || selectedPath == null
+                        || selectedPath.isBlank()) {
                     return;
                 }
 
                 File file = new File(selectedPath);
 
                 if (!file.isFile()
-                        || !file.getName().toLowerCase(Locale.ROOT).endsWith(".png")) {
+                        || !file.getName()
+                        .toLowerCase(Locale.ROOT)
+                        .endsWith(".png")) {
                     return;
                 }
 
@@ -615,9 +762,9 @@ public class CapeScreen extends Screen {
                         );
                     }
                 });
-            } catch (IOException e) {
-                e.printStackTrace();
-            } catch (InterruptedException e) {
+            } catch (IOException exception) {
+                exception.printStackTrace();
+            } catch (InterruptedException exception) {
                 Thread.currentThread().interrupt();
             }
         }, "Cape-File-Picker");
@@ -628,7 +775,9 @@ public class CapeScreen extends Screen {
 
     @Override
     public void onClose() {
-        this.minecraft.setScreen(null);
+        this.minecraft.setScreen(
+                defaultCapeSelectionMode ? parent : null
+        );
     }
 
     private record CapeEntry(
